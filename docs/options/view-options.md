@@ -29,6 +29,24 @@ Each configuration is identified by a view name and can have the following optio
 | `order`  | number  | domain specific<br>(See table above) | Ordering position of the view in the navigation bar.                                           |
 | `title`  | string  | domain specific                      | Title of the view in the navigation bar. (Shown when no icon is defined or hovering above it.) |
 
+## Dashboard Theme
+
+Set `theme` directly under `strategy` to apply an existing Home Assistant theme to every generated view,
+including home, domain and area views, as well as `extra_views`:
+
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  theme: My existing theme
+```
+
+This dashboard-wide setting **overrides individual view themes**. Omit it, or use an empty string, to preserve
+individual view themes and Home Assistant's normal theme selection. It does not install or define the named theme,
+and does not override themes configured directly on cards.
+
+On older Home Assistant versions, an `extra_views` entry using another view strategy must also return its theme
+from that strategy.
+
 ## Sorting Views
 
 The `order` property gives you control over how views are arranged in the top of the dashboard.

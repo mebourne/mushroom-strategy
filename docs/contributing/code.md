@@ -8,6 +8,7 @@ Want to get your hands dirty with the code? Awesome! We appreciate all code cont
 
 3. **Test Your Changes:** Thoroughly test your changes to ensure they work as expected and don't introduce new issues.
 
+     - Run `npm test` to build the strategy and run the regression tests.
      - You can build the strategy with `npm run build` (for production) or `npm run build-dev` (for development/testing).
      - Copy the built files to your Home Assistant's `www/community/mushroom-strategy` directory for testing.<br>
        **Remember to clear the cache of your Home Assistant client** to see the changes.

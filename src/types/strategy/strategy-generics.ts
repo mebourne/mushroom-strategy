@@ -147,6 +147,7 @@ export interface StrategyViewConfig extends LovelaceViewConfig {
 export interface DashboardInfo {
   config: LovelaceViewRawConfig & {
     strategy: {
+      theme?: string;
       options?: StrategyConfig & { area: AreaConfig };
     };
   };
@@ -169,6 +170,7 @@ export interface ViewInfo {
   hass: HomeAssistant;
   view: LovelaceViewRawConfig & {
     strategy: {
+      theme?: string;
       options: StrategyConfig & { area: StrategyArea };
     };
   };
