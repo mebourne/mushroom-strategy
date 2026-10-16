@@ -51,6 +51,16 @@ export default defineConfig(
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
+    name: 'test-overrides',
+    files: ['tests/**/*.mjs'],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+      },
+    },
+    extends: [tseslint.configs.disableTypeChecked],
+  },
+  {
     name: 'prettier-final-override',
     plugins: {
       prettier: prettierPlugin,

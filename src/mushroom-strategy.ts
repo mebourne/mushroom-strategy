@@ -96,19 +96,25 @@ class MushroomStrategy extends HTMLTemplateElement {
       });
     }
 
-    // Subviews for areas
+    // When label filtering is enabled, omit areas without matching entities.
     views.push(
-      ...Registry.areas.map((area) => ({
-        title: area.name,
-        path: area.area_id,
-        subview: true,
-        hidden: area.hidden ?? false,
-        order: area.order ?? Infinity,
-        strategy: {
-          type: 'custom:mushroom-strategy',
-          options: { area },
-        },
-      }))
+      ...Registry.areas
+        .filter(
+          (area) =>
+            !Registry.strategyOptions.filter_label ||
+            new RegistryFilter(Registry.entities).whereAreaId(area.area_id).count() > 0
+        )
+        .map((area) => ({
+          title: area.name,
+          path: area.area_id,
+          subview: true,
+          hidden: area.hidden ?? false,
+          order: area.order ?? Infinity,
+          strategy: {
+            type: 'custom:mushroom-strategy',
+            options: { area },
+          },
+        }))
     );
 
     return { views };

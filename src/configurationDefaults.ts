@@ -166,6 +166,7 @@ export const ConfigurationDefaults: StrategyConfig = {
   },
   extra_cards: [],
   extra_views: [],
+  filter_label: undefined,
   home_view: {
     hidden: {
       areas: false,

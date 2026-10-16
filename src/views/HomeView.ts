@@ -278,6 +278,14 @@ class HomeView extends AbstractView {
     const cardConfigurations: (TemplateCardConfig | AreaCardConfig)[] = [];
 
     for (const area of Registry.areas) {
+      // Preserve unfiltered dashboards, including areas containing only custom cards.
+      if (
+        Registry.strategyOptions.filter_label &&
+        !new registryFilter(Registry.entities).whereAreaId(area.area_id).count()
+      ) {
+        continue;
+      }
+
       const moduleName =
         Registry.strategyOptions.areas[area.area_id]?.type ?? Registry.strategyOptions.areas['_']?.type ?? 'default';
 

@@ -31,8 +31,31 @@ The options are divided into groups as described below.
 | `extra_cards`        | array of cards | empty                 | List of cards to show below the area cards.<br>See [extra Cards](home-view-options.md#extra-cards).                                       |
 | `views`              | object         | All supported views   | See [View Options](view-options.md).                                                                                                      |
 | `extra_views`        | array of views | empty                 | List of user defined views to add to the dashboard.<br>See [Extra Views](view-options.md#extra-views).                                    |
+| `filter_label`       | string         | unset                 | Restrict automatically generated entities to an entity label ID. See [Label Filtering](#label-filtering).                                 |
 
 ## Global Options
+
+### Label Filtering
+
+Set `options.filter_label` to a Home Assistant **label ID**, not its display name.
+Only entities explicitly carrying that label are included in automatically generated entity cards and counts.
+Labels assigned only to a device or area are not inherited. The existing hidden, disabled, domain and category
+exclusions still apply; a label does not make an otherwise excluded entity visible.
+
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    filter_label: dashboard
+```
+
+While a nonempty label is configured, areas with no remaining entities have neither home cards nor area subviews,
+including areas containing only manually configured extra cards. Matching entities without an entity or device area
+appear in [`undisclosed`](area-options.md#undisclosed-area).
+Omit `filter_label`, or set it to an empty string, to retain the unfiltered behavior, including empty areas.
+
+Explicit weather entities, quick-access cards, extra cards/views and custom card templates are not filtered.
+This option is not access control.
 
 ### Element Positioning
 

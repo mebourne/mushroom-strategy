@@ -234,6 +234,7 @@ export interface DefaultDomainConfig extends SingleDomainConfig {
  * @property {boolean} show_positions - Whether to show a positional item's position.
  * @property {Record<SupportedViews, StrategyViewConfig>} views - The configurations of views.
  * @property {LovelaceCardConfig[]} quick_access_cards - List of custom-defined cards to show before the area cards.
+ * @property {string} [filter_label] - Entity label ID to restrict automatically generated entity cards and counts.
  */
 export interface StrategyConfig {
   areas: {
@@ -252,6 +253,7 @@ export interface StrategyConfig {
   };
   extra_cards: LovelaceCardConfig[];
   extra_views: StrategyViewConfig[];
+  filter_label?: string;
   home_view: {
     hidden: Record<HomeViewSections, boolean>;
     stack_count: { _: number } & { [K in HomeViewSections]?: K extends 'areas' ? [number, number] : number };

@@ -141,9 +141,11 @@ class Registry {
     }));
 
     // Process entries of the HASS entity registry.
+    const filterLabel = Registry.strategyOptions.filter_label;
     Registry._entities = new RegistryFilter(Registry.entities)
       .isNotHidden()
       .whereDisabledBy(null)
+      .where((entity) => !filterLabel || entity.labels.includes(filterLabel))
       .where((entity) => {
         // Filter out config and diagnostic entities if the domain has hide_config_entities or hide_diagnostic_entities enabled.
         const entityDomain = entity.entity_id.split('.', 1)[0];
