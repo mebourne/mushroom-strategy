@@ -216,6 +216,10 @@ export const ConfigurationDefaults: StrategyConfig = {
       order: 40,
       hidden: false,
     },
+    temperature: {
+      order: 45,
+      hidden: false,
+    },
     vacuum: {
       order: 70,
       hidden: false,

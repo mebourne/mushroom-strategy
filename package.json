@@ -64,6 +64,7 @@
     "docs:list": "mike list",
     "build-dev": "webpack --config webpack.dev.config.ts",
     "build": "webpack",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "bump": "bumpp --preid alpha --no-commit --no-tag --no-push package.json package-lock.json README.md ./docs/index.md ./src/mushroom-strategy.ts",
     "prepare": "is-ci || husky"
   }
