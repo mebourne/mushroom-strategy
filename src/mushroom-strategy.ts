@@ -112,10 +112,17 @@ class MushroomStrategy extends HTMLTemplateElement {
           order: area.order ?? Infinity,
           strategy: {
             type: 'custom:mushroom-strategy',
+            theme: info.config.strategy.theme,
             options: { area },
           },
         }))
     );
+
+    // Propagate the strategy-level theme to every view, including area subviews.
+    const theme = info.config.strategy.theme;
+    if (theme) {
+      views = views.map((view) => ({ ...view, theme }));
+    }
 
     return { views };
   }
@@ -258,7 +265,9 @@ class MushroomStrategy extends HTMLTemplateElement {
       }
     }
 
-    return { cards: viewCards };
+    const theme = info.view.strategy.theme;
+
+    return { cards: viewCards, ...(theme ? { theme } : {}) };
   }
 
   /**
