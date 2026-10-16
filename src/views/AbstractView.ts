@@ -3,6 +3,7 @@ import HeaderCard from '../cards/HeaderCard';
 import { Registry } from '../Registry';
 import { LovelaceCardConfig } from '../types/homeassistant/data/lovelace/config/card';
 import { LovelaceViewConfig } from '../types/homeassistant/data/lovelace/config/view';
+import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
 import { StackCardConfig } from '../types/homeassistant/panels/lovelace/cards/types';
 import {
   AbstractCardConfig,
@@ -10,7 +11,7 @@ import {
   CustomHeaderCardConfig,
   StrategyHeaderCardConfig,
 } from '../types/strategy/strategy-cards';
-import { SupportedDomains } from '../types/strategy/strategy-generics';
+import { CustomCardConfig, SupportedDomains } from '../types/strategy/strategy-generics';
 import { ViewConfig, ViewConstructor } from '../types/strategy/strategy-views';
 import { sanitizeClassName } from '../utilities/auxiliaries';
 import { logMessage, lvlFatal } from '../utilities/debug';
@@ -90,10 +91,7 @@ abstract class AbstractView {
     const viewCards: LovelaceCardConfig[] = [];
     const moduleName = sanitizeClassName(this.domain + 'Card');
     const DomainCard = ((await import(`../cards/${moduleName}`)) as { default: CardConstructor }).default;
-    const domainEntities = new RegistryFilter(Registry.entities)
-      .whereDomain(this.domain)
-      .where((entity) => !entity.entity_id.endsWith('_stateful_scene'))
-      .toList();
+    const domainEntities = this.getEntities();
 
     // Create card configurations for each area.
     for (const area of Registry.areas) {
@@ -107,11 +105,7 @@ abstract class AbstractView {
       };
 
       // Create a card configuration for each entity in the current area.
-      areaCards.push(
-        ...areaEntities.map((entity) =>
-          new DomainCard(entity, Registry.strategyOptions.card_options?.[entity.entity_id]).getCard()
-        )
-      );
+      areaCards.push(...areaEntities.map((entity) => new DomainCard(entity, this.getCardOptions(entity)).getCard()));
 
       // Stack the cards of the current area.
       if (areaCards.length) {
@@ -146,6 +140,19 @@ abstract class AbstractView {
     }
 
     return viewCards;
+  }
+
+  /** Get the entities represented by this view. */
+  protected getEntities(): EntityRegistryEntry[] {
+    return new RegistryFilter(Registry.entities)
+      .whereDomain(this.domain)
+      .where((entity) => !entity.entity_id.endsWith('_stateful_scene'))
+      .toList();
+  }
+
+  /** Get custom options for an entity's card. */
+  protected getCardOptions(entity: EntityRegistryEntry): CustomCardConfig | undefined {
+    return Registry.strategyOptions.card_options?.[entity.entity_id];
   }
 
   /**

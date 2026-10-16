@@ -5,19 +5,20 @@ Hidden/Disabled entities or linked to a hidden area are excluded from the view.
 
 The following views are supported and enabled by default:
 
-| View      | name     | Ordering Position | Type   | Description               |
-|:----------|:---------|:-----------------:|:-------|:--------------------------|
-| `home`    | Home     |     -Infinity     | object | The strategy's Home View. |
-| `light`   | Lights   |        10         | object | View to control lights.   |
-| `fan`     | Fans     |        20         | object | View to control fans.     |
-| `cover`   | Covers   |        30         | object | View to control covers.   |
-| `switch`  | Switches |        40         | object | View to control switches. |
-| `climate` | Climates |        50         | object | View to control climates. |
-| `camera`  | Cameras  |        60         | object | View to control cameras.  |
-| `vacuum`  | Vacuums  |        70         | object | View to control vacuums.  |
-| `scene`   | Scenes   |        80         | object | View to control scenes.   |
-| `lock`    | Locks    |        90         | object | View to control locks.    |
-| `valve`   | Valves   |        100        | object | View to control valves.   |
+| View          | name         | Ordering Position | Type   | Description                    |
+|:--------------|:-------------|:-----------------:|:-------|:-------------------------------|
+| `home`        | Home         |     -Infinity     | object | The strategy's Home View.      |
+| `light`       | Lights       |        10         | object | View to control lights.        |
+| `fan`         | Fans         |        20         | object | View to control fans.          |
+| `cover`       | Covers       |        30         | object | View to control covers.        |
+| `switch`      | Switches     |        40         | object | View to control switches.      |
+| `temperature` | Temperatures |        45         | object | Graphs of temperature sensors. |
+| `climate`     | Climates     |        50         | object | View to control climates.      |
+| `camera`      | Cameras      |        60         | object | View to control cameras.       |
+| `vacuum`      | Vacuums      |        70         | object | View to control vacuums.       |
+| `scene`       | Scenes       |        80         | object | View to control scenes.        |
+| `lock`        | Locks        |        90         | object | View to control locks.         |
+| `valve`       | Valves       |        100        | object | View to control valves.        |
 
 The `views` group enables you to specify the configuration of a view.
 Each configuration is identified by a view name and can have the following options:
@@ -28,6 +29,17 @@ Each configuration is identified by a view name and can have the following optio
 | `icon`   | string  | domain specific                      | Icon of the view in the navigation bar.                                                        |
 | `order`  | number  | domain specific<br>(See table above) | Ordering position of the view in the navigation bar.                                           |
 | `title`  | string  | domain specific                      | Title of the view in the navigation bar. (Shown when no icon is defined or hovering above it.) |
+
+## Temperature View
+
+The `temperature` view displays `sensor` entities whose current `unit_of_measurement` is exactly `°C`, `°F` or `K`.
+Each sensor gets a Mini Graph Card. The tab disappears when no eligible sensors remain.
+Sensors are grouped by their entity area, falling back to the device's area, or **Other** when neither is assigned.
+
+Graph options come from `card_options`: device options apply first, then entity options override them.
+Each graph's `entities` list is always the selected sensor; it cannot be replaced with unrelated entities through
+these options. Row layout uses `domains.sensor.stack_count`, falling back to `domains._.stack_count`.
+Temperature headers are read-only and do not offer sensor service controls.
 
 ## Sorting Views
 

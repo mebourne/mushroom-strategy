@@ -57,6 +57,7 @@ const SUPPORTED_VIEWS = [
   'lock',
   'scene',
   'switch',
+  'temperature',
   'vacuum',
   'valve',
 ] as const;
