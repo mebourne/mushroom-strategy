@@ -9,8 +9,9 @@ import AbstractBadge from './AbstractBadge';
  *
  * Used to create a badge configuration to indicate how many batteries are low and to navigate to the battery view.
  *
- * A battery counts as low when its state is below the battery low level of the strategy options. States that aren't
- * numbers, like `unavailable`, count as full instead, so a battery that isn't reporting never triggers the badge.
+ * A battery counts as low when its state is at or below the battery low level of the strategy options. States that
+ * aren't numbers, like `unavailable`, count as full instead, so a battery that isn't reporting never triggers the
+ * badge.
  */
 class BatteryBadge extends AbstractBadge {
   /**
@@ -28,11 +29,11 @@ class BatteryBadge extends AbstractBadge {
   static getDefaultConfig(): LovelaceBadgeConfig {
     const lowLevel = Registry.strategyOptions.badges.battery_low_level;
 
-    // A state that isn't a number becomes the fallback 100, so only numeric states below the level are counted.
+    // A state that isn't a number becomes the fallback 100, so only numeric states at or below the level are counted.
     const count =
       `[${Registry.getBatteryEntities()
         .map((entity) => `states['${entity.entity_id}']`)
-        .toString()}]` + ` | map(attribute='state') | map('float', 100) | select('lt', ${lowLevel}) | list | count`;
+        .toString()}]` + ` | map(attribute='state') | map('float', 100) | select('le', ${lowLevel}) | list | count`;
 
     return {
       type: 'custom:mushroom-template-badge',

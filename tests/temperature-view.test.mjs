@@ -79,7 +79,8 @@ test('temperature cards select exact sensor units and group by entity area, devi
       'sensor.kelvin',
     ]
   );
-  // Names are composed from the registry (device name plus entity name) and "temperature" is removed.
+  // Names are composed from the registry (device name plus entity name) and "temperature" is removed. A name of only
+  // "temperature" falls back to the device's name, used verbatim, like the battery cards do.
   assert.deepEqual(
     cards(view).map((card) => card.primary),
     ['Bedroom', 'Bedroom', 'Diagnostic', 'Kitchen', 'Second', 'Bedroom', 'Kelvin']
