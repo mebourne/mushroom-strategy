@@ -180,6 +180,10 @@ export const ConfigurationDefaults: StrategyConfig = {
   },
   show_positions: false,
   views: {
+    battery: {
+      order: 55,
+      hidden: false,
+    },
     camera: {
       order: 60,
       hidden: false,

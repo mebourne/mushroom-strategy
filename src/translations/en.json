@@ -1,4 +1,7 @@
 {
+  "battery": {
+    "batteries": "Batteries"
+  },
   "camera": {
     "all_cameras": "All Cameras",
     "cameras": "Cameras"

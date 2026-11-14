@@ -1,6 +1,5 @@
 import { TemplateCardConfig } from '../types/lovelace-mushroom/cards/template-card-config';
 import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
-import { Registry } from '../Registry';
 import AbstractCard from './AbstractCard';
 
 /**
@@ -64,24 +63,16 @@ class TemperatureCard extends AbstractCard {
   /**
    * Get the name to display for the entity, without "temperature".
    *
-   * The name is composed the way Home Assistant composes entity names: the entity's own name, or for entities named
-   * after their device, the device's name followed by the entity's original name. An empty name falls back to the
-   * device's name the same way, since Home Assistant treats an empty registry name as unset.
    * Removing "temperature" shortens names like "Office temperature" to "Office". A name consisting of only that word
-   * carries no information, so such a card shows the device's name instead.
+   * carries no information, so such a card shows the device's name instead, like the battery card does.
    *
    * @param {EntityRegistryEntry} entity The HASS entity to name.
    */
-  private static getDisplayName(entity: EntityRegistryEntry): string {
-    const device = entity.device_id ? Registry.devices.find((device) => device.id === entity.device_id) : undefined;
-    const deviceName = device?.name_by_user ?? device?.name;
-    const name =
-      entity.name ||
-      (entity.has_entity_name && deviceName ? `${deviceName} ${entity.original_name}` : entity.original_name) ||
-      '?';
+  protected static getDisplayName(entity: EntityRegistryEntry): string {
+    const name = AbstractCard.getDisplayName(entity);
     const shortName = name.replace(/temperature/gi, '').trim();
 
-    return shortName || deviceName || name;
+    return shortName || AbstractCard.getDeviceName(entity) || name;
   }
 
   /** Returns the default configuration object for the card. */
