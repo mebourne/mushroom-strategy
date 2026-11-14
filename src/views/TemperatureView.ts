@@ -1,6 +1,8 @@
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 
 import { Registry } from '../Registry';
+import AbstractCard from '../cards/AbstractCard';
+import TemperatureCard from '../cards/TemperatureCard';
 import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
 import { CustomHeaderCardConfig } from '../types/strategy/strategy-cards';
 import { CustomCardConfig } from '../types/strategy/strategy-generics';
@@ -65,12 +67,16 @@ class TemperatureView extends AbstractView {
     });
   }
 
-  /** Apply device and entity options, keeping each graph bound to its selected temperature sensor. */
+  /** Create a temperature card for the entity, instead of the sensor domain's graph card. */
+  protected createCard(entity: EntityRegistryEntry): AbstractCard {
+    return new TemperatureCard(entity, this.getCardOptions(entity));
+  }
+
+  /** Apply device and entity options, keeping each card bound to its selected temperature sensor. */
   protected getCardOptions(entity: EntityRegistryEntry): CustomCardConfig {
     return {
       ...(entity.device_id && Registry.strategyOptions.card_options?.[entity.device_id]),
       ...Registry.strategyOptions.card_options?.[entity.entity_id],
-      entities: [entity.entity_id],
     };
   }
 }

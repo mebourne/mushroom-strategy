@@ -1,4 +1,5 @@
 import { HassServiceTarget } from 'home-assistant-js-websocket';
+import AbstractCard from '../cards/AbstractCard';
 import HeaderCard from '../cards/HeaderCard';
 import { Registry } from '../Registry';
 import { LovelaceCardConfig } from '../types/homeassistant/data/lovelace/config/card';
@@ -105,7 +106,7 @@ abstract class AbstractView {
       };
 
       // Create a card configuration for each entity in the current area.
-      areaCards.push(...areaEntities.map((entity) => new DomainCard(entity, this.getCardOptions(entity)).getCard()));
+      areaCards.push(...areaEntities.map((entity) => this.createCard(entity, DomainCard).getCard()));
 
       // Stack the cards of the current area.
       if (areaCards.length) {
@@ -153,6 +154,18 @@ abstract class AbstractView {
   /** Get custom options for an entity's card. */
   protected getCardOptions(entity: EntityRegistryEntry): CustomCardConfig | undefined {
     return Registry.strategyOptions.card_options?.[entity.entity_id];
+  }
+
+  /**
+   * Create the card for an entity in this view.
+   *
+   * Views displaying another card style than the domain's standard card should override this method.
+   *
+   * @param {EntityRegistryEntry} entity The HASS entity to create a card configuration for.
+   * @param {CardConstructor} DomainCard The domain's standard card class.
+   */
+  protected createCard(entity: EntityRegistryEntry, DomainCard: CardConstructor): AbstractCard {
+    return new DomainCard(entity, this.getCardOptions(entity));
   }
 
   /**
