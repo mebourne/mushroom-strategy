@@ -1,5 +1,6 @@
 import { Registry } from '../Registry';
 import { LovelaceCardConfig } from '../types/homeassistant/data/lovelace/config/card';
+import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
 import { AbstractCardConfig } from '../types/strategy/strategy-cards';
 import { isEntityRegistryEntry, isSupportedDomain, RegistryEntry } from '../types/strategy/strategy-generics';
 import { logMessage, lvlFatal } from '../utilities/debug';
@@ -41,6 +42,25 @@ abstract class AbstractCard {
     }
 
     this.entity = entity;
+  }
+
+  /**
+   * Get the name to display for the entity.
+   *
+   * The name is composed the way Home Assistant composes entity names: the entity's own name, or for entities named
+   * after their device, the device's name followed by the entity's original name.
+   *
+   * @param {EntityRegistryEntry} entity The HASS entity to name.
+   */
+  protected static getDisplayName(entity: EntityRegistryEntry): string {
+    const device = entity.device_id ? Registry.devices.find((device) => device.id === entity.device_id) : undefined;
+    const deviceName = device?.name_by_user ?? device?.name;
+
+    return (
+      entity.name ??
+      (entity.has_entity_name && deviceName ? `${deviceName} ${entity.original_name}` : entity.original_name) ??
+      '?'
+    );
   }
 
   /**

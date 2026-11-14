@@ -48,6 +48,7 @@ const SUPPORTED_DOMAINS = [
  * This constant array defines the views that are supported by the strategy.
  */
 const SUPPORTED_VIEWS = [
+  'battery',
   'camera',
   'climate',
   'cover',

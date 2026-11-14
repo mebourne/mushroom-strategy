@@ -71,6 +71,16 @@ Row layout uses `domains.sensor.stack_count`, falling back to `domains._.stack_c
 The view has no all-entities Header card; only each area gets a header.
 Temperature headers are read-only and do not offer sensor service controls.
 
+## Battery View
+
+The `battery` view displays `sensor` entities whose current `device_class` is `battery`.
+Grouping, hidden areas, diagnostic entities, card options and layout follow the temperature view.
+
+Each sensor gets a Mushroom template card showing the sensor's name with a trailing "battery" removed, its current
+level and a trend graph feature.
+The icon is the sensor's own icon, falling back to the battery icon, and the icon and text colour is green above or at
+50%, amber above or at 25% and red below that.
+
 ## Sorting Views
 
 The `order` property gives you control over how views are arranged in the top of the dashboard.
