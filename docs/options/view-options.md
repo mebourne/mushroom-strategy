@@ -52,6 +52,7 @@ from that strategy.
 
 The `temperature` view displays `sensor` entities whose current `unit_of_measurement` is exactly `°C`, `°F` or `K`.
 Sensors are grouped by their entity area, falling back to the device's area, or **Other** when neither is assigned.
+The view also includes areas hidden by the strategy options, since its cards are read-only information.
 The tab disappears when no eligible sensors remain.
 
 Each sensor gets a Mushroom template card showing the sensor's name, composed from the registry the way Home Assistant
