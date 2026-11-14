@@ -136,7 +136,7 @@ abstract class AbstractView {
     }
 
     // Add a Header Card to control all the entities in the view.
-    if (this.viewHeaderCardConfiguration.cards.length && viewCards.length) {
+    if (this.hasViewHeaderCard() && this.viewHeaderCardConfiguration.cards.length && viewCards.length) {
       viewCards.unshift(this.viewHeaderCardConfiguration);
     }
 
@@ -154,6 +154,15 @@ abstract class AbstractView {
   /** Get custom options for an entity's card. */
   protected getCardOptions(entity: EntityRegistryEntry): CustomCardConfig | undefined {
     return Registry.strategyOptions.card_options?.[entity.entity_id];
+  }
+
+  /**
+   * Whether the view shows a Header card that controls all the view's entities.
+   *
+   * Views without a meaningful all-entities header should override this to return false.
+   */
+  protected hasViewHeaderCard(): boolean {
+    return true;
   }
 
   /**

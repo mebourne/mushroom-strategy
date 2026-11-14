@@ -81,7 +81,7 @@ test('temperature cards select exact sensor units and group by entity area, devi
   }
   assert.deepEqual(
     titles(view).map((card) => card.title),
-    ['All Temperatures', 'bedroom', 'kitchen', 'Other']
+    ['bedroom', 'kitchen', 'Other']
   );
   for (const [area, ids] of [
     ['bedroom', ['sensor.fahrenheit']],
@@ -115,7 +115,7 @@ test('temperature cards omit hidden entity areas, device areas and the undisclos
   );
   assert.deepEqual(
     titles(view).map((card) => card.title),
-    ['All Temperatures', 'kitchen']
+    ['kitchen']
   );
   const hidden = await generate({
     entities,
@@ -161,12 +161,11 @@ test('temperature views respect custom headers, positions and device then entity
   );
   assert.deepEqual(
     titles(view).map((card) => card.title),
-    ['All Temperatures', 'Zone', 'Zone', 'Zone']
+    ['Zone', 'Zone', 'Zone']
   );
+  // The view has no all-entities Header card; each area header carries its own subtitle.
   assert.deepEqual(
-    titles(view)
-      .slice(1)
-      .map((card) => card.subtitle),
+    titles(view).map((card) => card.subtitle),
     ['Ordering position: 10', 'Ordering position: 40', 'Ordering position: Infinity']
   );
   const celsius = cards(view).find((card) => card.entity === 'sensor.celsius');
@@ -206,13 +205,13 @@ test('temperature headings use the normal English translation fallback for unsup
   const { dashboard } = await generate({ entities, devices, states, options, language: 'xx' });
   const view = dashboard.views.find((view) => view.path === 'temperatures');
   assert.equal(view.title, 'Temperatures');
-  assert.equal(titles(view)[0].title, 'All Temperatures');
+  assert.equal(titles(view)[0].title, 'bedroom');
 });
 
 test('temperature headings fall back to English while existing headings use the selected language', async () => {
   const { dashboard } = await generate({ entities, devices, states, options, language: 'de' });
   const view = dashboard.views.find((view) => view.path === 'temperatures');
   assert.equal(view.title, 'Temperatures');
-  assert.equal(titles(view)[0].title, 'All Temperatures');
+  assert.equal(titles(view)[0].title, 'bedroom');
   assert.equal(titles(view).at(-1).title, 'Sonstiges');
 });

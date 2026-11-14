@@ -4,7 +4,6 @@ import { Registry } from '../Registry';
 import AbstractCard from '../cards/AbstractCard';
 import TemperatureCard from '../cards/TemperatureCard';
 import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
-import { CustomHeaderCardConfig } from '../types/strategy/strategy-cards';
 import { CustomCardConfig } from '../types/strategy/strategy-generics';
 import { ViewConfig } from '../types/strategy/strategy-views';
 import { localize } from '../utilities/localize';
@@ -35,22 +34,15 @@ class TemperatureView extends AbstractView {
     };
   }
 
-  /** Returns the default configuration of the view's Header card. */
-  static getViewHeaderCardConfig(): CustomHeaderCardConfig {
-    return {
-      title: localize('temperature.all_temperatures'),
-      show_controls: false,
-    };
+  /** The view only groups its cards per area, so it has no Header card for all its entities. */
+  protected override hasViewHeaderCard(): boolean {
+    return false;
   }
 
   constructor(customConfiguration?: ViewConfig) {
     super();
 
-    this.initializeViewConfig(
-      TemperatureView.getDefaultConfig(),
-      customConfiguration,
-      TemperatureView.getViewHeaderCardConfig()
-    );
+    this.initializeViewConfig(TemperatureView.getDefaultConfig(), customConfiguration, {});
 
     // Temperature graphs are read-only, even if sensor-domain controls are enabled.
     this.baseConfiguration.headerCardConfiguration = {
