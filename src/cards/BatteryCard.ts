@@ -14,17 +14,18 @@ import AbstractCard from './AbstractCard';
  */
 class BatteryCard extends AbstractCard {
   /**
-   * Get the name to display for the entity, without a trailing "battery".
+   * Get the name to display for the entity, without "battery".
    *
-   * Removing a trailing "battery" shortens names like "Kitchen Light Switch battery" to "Kitchen Light Switch", but a
-   * name consisting of only that word is kept intact.
+   * Removing a trailing "battery" shortens names like "Kitchen Light Switch battery" to "Kitchen Light Switch".
+   * A name consisting of only "battery" carries no information, so such a card shows the device's name instead.
    *
    * @param {EntityRegistryEntry} entity The HASS entity to name.
    */
   protected static getDisplayName(entity: EntityRegistryEntry): string {
     const name = AbstractCard.getDisplayName(entity);
+    const shortName = name.replace(/\s*battery$/i, '').trim();
 
-    return name.replace(/\s*battery$/i, '').trim() || name;
+    return shortName || AbstractCard.getDeviceName(entity) || name;
   }
 
   /** Returns the default configuration object for the card. */

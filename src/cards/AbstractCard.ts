@@ -45,6 +45,23 @@ abstract class AbstractCard {
   }
 
   /**
+   * Get the name of the entity's device.
+   *
+   * @param {EntityRegistryEntry} entity The HASS entity whose device to name.
+   *
+   * @returns {string | undefined} The device's user-defined name, or its default name, or undefined without a device.
+   */
+  protected static getDeviceName(entity: EntityRegistryEntry): string | undefined {
+    if (!entity.device_id) {
+      return undefined;
+    }
+
+    const device = Registry.devices.find((device) => device.id === entity.device_id);
+
+    return device?.name_by_user ?? device?.name ?? undefined;
+  }
+
+  /**
    * Get the name to display for the entity.
    *
    * The name is composed the way Home Assistant composes entity names: the entity's own name, or for entities named
@@ -54,8 +71,7 @@ abstract class AbstractCard {
    * @param {EntityRegistryEntry} entity The HASS entity to name.
    */
   protected static getDisplayName(entity: EntityRegistryEntry): string {
-    const device = entity.device_id ? Registry.devices.find((device) => device.id === entity.device_id) : undefined;
-    const deviceName = device?.name_by_user ?? device?.name;
+    const deviceName = AbstractCard.getDeviceName(entity);
 
     return (
       entity.name ||

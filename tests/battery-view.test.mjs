@@ -9,6 +9,7 @@ const entities = [
     original_name: 'Battery',
     device_id: 'bedroom-device',
   }),
+  entity('sensor.scroll_battery', 'bedroom', { original_name: 'Battery', device_id: 'scroll-device' }),
   entity('sensor.diagnostic_battery', 'kitchen', { entity_category: 'diagnostic', name: 'Diagnostic battery' }),
   entity('sensor.esp_battery', 'garage', {
     name: '',
@@ -16,6 +17,7 @@ const entities = [
     original_name: 'Battery',
     device_id: 'esp-device',
   }),
+  entity('sensor.battery', 'kitchen', { name: 'Battery' }),
   entity('sensor.phone_battery', null, { name: 'Pixel 6 Pro Battery' }),
   entity('sensor.humidity', 'kitchen', { name: 'Humidity' }),
   entity('sensor.no_state', 'kitchen', { name: 'No state battery' }),
@@ -27,6 +29,7 @@ const entities = [
 const devices = [
   { id: 'bedroom-device', area_id: 'bedroom', disabled_by: null, labels: [], name: 'Bedroom' },
   { id: 'esp-device', area_id: 'garage', disabled_by: null, labels: [], name: 'Garage ESP' },
+  { id: 'scroll-device', area_id: 'bedroom', disabled_by: null, labels: [], name: 'Bedroom Scroll' },
 ];
 const states = Object.fromEntries(
   entities
@@ -54,18 +57,20 @@ test('battery cards select battery sensors and group by entity area, device area
   assert.deepEqual(
     cards(view).map((card) => card.entity),
     [
+      'sensor.scroll_battery',
       'sensor.bedroom_battery',
       'sensor.esp_battery',
+      'sensor.battery',
       'sensor.battery_level',
       'sensor.diagnostic_battery',
       'sensor.phone_battery',
     ]
   );
   // Names are composed from the registry (device name plus entity name) and a trailing "battery" is removed.
-  // An entity with an empty name falls back to its device's name.
+  // An entity with an empty name falls back to its device's name, and a name of only "battery" shows the device.
   assert.deepEqual(
     cards(view).map((card) => card.primary),
-    ['Bedroom', 'Garage ESP', 'Battery Level', 'Diagnostic', 'Pixel 6 Pro']
+    ['Bedroom Scroll', 'Bedroom', 'Garage ESP', 'Battery', 'Battery Level', 'Diagnostic', 'Pixel 6 Pro']
   );
   for (const card of cards(view)) {
     assert.equal(card.icon, "{{ state_attr(config.entity, 'icon') or 'mdi:battery' }}");
@@ -80,9 +85,9 @@ test('battery cards select battery sensors and group by entity area, device area
     assert.ok(!collect(card, (card) => card.tap_action?.action === 'perform-action').length);
   }
   for (const [area, ids] of [
-    ['bedroom', ['sensor.bedroom_battery']],
+    ['bedroom', ['sensor.scroll_battery', 'sensor.bedroom_battery']],
     ['garage', ['sensor.esp_battery']],
-    ['kitchen', ['sensor.battery_level', 'sensor.diagnostic_battery']],
+    ['kitchen', ['sensor.battery', 'sensor.battery_level', 'sensor.diagnostic_battery']],
     ['Other', ['sensor.phone_battery']],
   ]) {
     const section = view.cards.find((card) => titles(card)[0]?.title === area);
@@ -94,7 +99,7 @@ test('battery cards select battery sensors and group by entity area, device area
   const kitchen = view.cards.find((card) => titles(card)[0]?.title === 'kitchen');
   assert.deepEqual(
     kitchen.cards.filter((card) => cards(card).length).map((row) => cards(row).length),
-    [1, 1]
+    [1, 1, 1]
   );
 });
 
@@ -109,8 +114,10 @@ test('battery cards include areas hidden by the strategy options, which other vi
   assert.deepEqual(
     cards(view).map((card) => card.entity),
     [
+      'sensor.scroll_battery',
       'sensor.bedroom_battery',
       'sensor.esp_battery',
+      'sensor.battery',
       'sensor.battery_level',
       'sensor.diagnostic_battery',
       'sensor.phone_battery',
@@ -130,7 +137,7 @@ test('battery cards include areas hidden by the strategy options, which other vi
     options: { ...options, areas: { _: { hidden: true }, undisclosed: { hidden: true } } },
   });
   const allHiddenView = allHidden.dashboard.views.find((view) => view.path === 'batteries');
-  assert.equal(cards(allHiddenView).length, 5);
+  assert.equal(cards(allHiddenView).length, 7);
 });
 
 test('battery views respect custom headers, positions and device then entity card options', async () => {
