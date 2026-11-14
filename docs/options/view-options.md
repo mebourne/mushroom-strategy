@@ -12,7 +12,7 @@ The following views are supported and enabled by default:
 | `fan`         | Fans         |        20         | object | View to control fans.          |
 | `cover`       | Covers       |        30         | object | View to control covers.        |
 | `switch`      | Switches     |        40         | object | View to control switches.      |
-| `temperature` | Temperatures |        45         | object | Graphs of temperature sensors. |
+| `temperature` | Temperatures |        45         | object | Cards of temperature sensors.  |
 | `climate`     | Climates     |        50         | object | View to control climates.      |
 | `camera`      | Cameras      |        60         | object | View to control cameras.       |
 | `vacuum`      | Vacuums      |        70         | object | View to control vacuums.       |
@@ -33,12 +33,21 @@ Each configuration is identified by a view name and can have the following optio
 ## Temperature View
 
 The `temperature` view displays `sensor` entities whose current `unit_of_measurement` is exactly `°C`, `°F` or `K`.
-Each sensor gets a Mini Graph Card. The tab disappears when no eligible sensors remain.
 Sensors are grouped by their entity area, falling back to the device's area, or **Other** when neither is assigned.
+The tab disappears when no eligible sensors remain.
 
-Graph options come from `card_options`: device options apply first, then entity options override them.
-Each graph's `entities` list is always the selected sensor; it cannot be replaced with unrelated entities through
-these options. Row layout uses `domains.sensor.stack_count`, falling back to `domains._.stack_count`.
+Each sensor gets a Mushroom template card showing the sensor's name, composed from the registry the way Home Assistant
+composes entity names (the entity's own name, or the device's name followed by the entity's name), with "temperature"
+removed, plus the current temperature and unit, a trend graph feature and a background colour gradient matching the
+temperature, from blue at 10°C to red at 40°C. The secondary info also shows the percentage of the sibling humidity
+sensor, found by replacing "temperature" in the entity id with "humidity", and a low-battery warning for a sibling
+found by replacing it with "temperature_battery". The gradient requires the
+[card-mod](https://github.com/thomasloven/lovelace-card-mod) integration; without it, the cards render without their
+gradient.
+
+Card options come from `card_options`: device options apply first, then entity options override them.
+Each card is always bound to its selected sensor; it cannot be pointed at another entity through these options.
+Row layout uses `domains.sensor.stack_count`, falling back to `domains._.stack_count`.
 Temperature headers are read-only and do not offer sensor service controls.
 
 ## Sorting Views
