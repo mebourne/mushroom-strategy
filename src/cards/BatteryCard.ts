@@ -37,7 +37,8 @@ class BatteryCard extends AbstractCard {
         '{% set level = states(config.entity) | float(0) %}{% if level >= 50 %}green{% elif level >= 25 %}amber{% else %}red{% endif %}',
       primary: BatteryCard.getDisplayName(entity),
       secondary: `{{ states(config.entity) }}{{ state_attr(config.entity, 'unit_of_measurement') }}`,
-      features: [{ type: 'trend-graph' }],
+      // Show a week of level history, since battery levels change slowly.
+      features: [{ type: 'trend-graph', hours_to_show: 168 }],
       features_position: 'bottom',
     };
   }

@@ -78,7 +78,7 @@ test('battery cards select battery sensors and group by entity area, device area
     assert.match(card.color, /green/);
     assert.match(card.color, /amber/);
     assert.match(card.color, /red/);
-    assert.deepEqual(card.features, [{ type: 'trend-graph' }]);
+    assert.deepEqual(card.features, [{ type: 'trend-graph', hours_to_show: 168 }]);
     assert.equal(card.features_position, 'bottom');
     assert.equal(card.secondary, "{{ states(config.entity) }}{{ state_attr(config.entity, 'unit_of_measurement') }}");
     assert.equal(card.card_mod, undefined);
