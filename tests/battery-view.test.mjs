@@ -10,6 +10,12 @@ const entities = [
     device_id: 'bedroom-device',
   }),
   entity('sensor.diagnostic_battery', 'kitchen', { entity_category: 'diagnostic', name: 'Diagnostic battery' }),
+  entity('sensor.esp_battery', 'garage', {
+    name: '',
+    has_entity_name: true,
+    original_name: 'Battery',
+    device_id: 'esp-device',
+  }),
   entity('sensor.phone_battery', null, { name: 'Pixel 6 Pro Battery' }),
   entity('sensor.humidity', 'kitchen', { name: 'Humidity' }),
   entity('sensor.no_state', 'kitchen', { name: 'No state battery' }),
@@ -18,7 +24,10 @@ const entities = [
   entity('sensor.custom_hidden', 'kitchen', { name: 'Config hidden battery' }),
   entity('switch.charger', 'kitchen'),
 ];
-const devices = [{ id: 'bedroom-device', area_id: 'bedroom', disabled_by: null, labels: [], name: 'Bedroom' }];
+const devices = [
+  { id: 'bedroom-device', area_id: 'bedroom', disabled_by: null, labels: [], name: 'Bedroom' },
+  { id: 'esp-device', area_id: 'garage', disabled_by: null, labels: [], name: 'Garage ESP' },
+];
 const states = Object.fromEntries(
   entities
     .filter((entry) => entry.entity_id !== 'sensor.no_state')
@@ -44,12 +53,19 @@ test('battery cards select battery sensors and group by entity area, device area
   assert.equal(view.icon, 'mdi:battery');
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.bedroom_battery', 'sensor.battery_level', 'sensor.diagnostic_battery', 'sensor.phone_battery']
+    [
+      'sensor.bedroom_battery',
+      'sensor.esp_battery',
+      'sensor.battery_level',
+      'sensor.diagnostic_battery',
+      'sensor.phone_battery',
+    ]
   );
   // Names are composed from the registry (device name plus entity name) and a trailing "battery" is removed.
+  // An entity with an empty name falls back to its device's name.
   assert.deepEqual(
     cards(view).map((card) => card.primary),
-    ['Bedroom', 'Battery Level', 'Diagnostic', 'Pixel 6 Pro']
+    ['Bedroom', 'Garage ESP', 'Battery Level', 'Diagnostic', 'Pixel 6 Pro']
   );
   for (const card of cards(view)) {
     assert.equal(card.icon, "{{ state_attr(config.entity, 'icon') or 'mdi:battery' }}");
@@ -65,6 +81,7 @@ test('battery cards select battery sensors and group by entity area, device area
   }
   for (const [area, ids] of [
     ['bedroom', ['sensor.bedroom_battery']],
+    ['garage', ['sensor.esp_battery']],
     ['kitchen', ['sensor.battery_level', 'sensor.diagnostic_battery']],
     ['Other', ['sensor.phone_battery']],
   ]) {
@@ -91,7 +108,13 @@ test('battery cards include areas hidden by the strategy options, which other vi
   const view = dashboard.views.find((view) => view.path === 'batteries');
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.bedroom_battery', 'sensor.battery_level', 'sensor.diagnostic_battery', 'sensor.phone_battery']
+    [
+      'sensor.bedroom_battery',
+      'sensor.esp_battery',
+      'sensor.battery_level',
+      'sensor.diagnostic_battery',
+      'sensor.phone_battery',
+    ]
   );
   // The control views keep omitting the hidden areas.
   const switches = dashboard.views.find((view) => view.path === 'switches');
@@ -107,7 +130,7 @@ test('battery cards include areas hidden by the strategy options, which other vi
     options: { ...options, areas: { _: { hidden: true }, undisclosed: { hidden: true } } },
   });
   const allHiddenView = allHidden.dashboard.views.find((view) => view.path === 'batteries');
-  assert.equal(cards(allHiddenView).length, 4);
+  assert.equal(cards(allHiddenView).length, 5);
 });
 
 test('battery views respect custom headers, positions and device then entity card options', async () => {
@@ -139,12 +162,12 @@ test('battery views respect custom headers, positions and device then entity car
   assert.equal(view.icon, 'mdi:battery-alert');
   assert.deepEqual(
     titles(view).map((card) => card.title),
-    ['Zone', 'Zone', 'Zone']
+    ['Zone', 'Zone', 'Zone', 'Zone']
   );
   // The view has no all-entities Header card; each area header carries its own subtitle.
   assert.deepEqual(
     titles(view).map((card) => card.subtitle),
-    ['Ordering position: 10', 'Ordering position: 40', 'Ordering position: Infinity']
+    ['Ordering position: 10', 'Ordering position: 30', 'Ordering position: 40', 'Ordering position: Infinity']
   );
   const level = cards(view).find((card) => card.entity === 'sensor.battery_level');
   const bedroom = cards(view).find((card) => card.entity === 'sensor.bedroom_battery');

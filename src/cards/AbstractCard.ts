@@ -49,6 +49,7 @@ abstract class AbstractCard {
    *
    * The name is composed the way Home Assistant composes entity names: the entity's own name, or for entities named
    * after their device, the device's name followed by the entity's original name.
+   * An empty name falls back to the device's name the same way.
    *
    * @param {EntityRegistryEntry} entity The HASS entity to name.
    */
@@ -57,8 +58,8 @@ abstract class AbstractCard {
     const deviceName = device?.name_by_user ?? device?.name;
 
     return (
-      entity.name ??
-      (entity.has_entity_name && deviceName ? `${deviceName} ${entity.original_name}` : entity.original_name) ??
+      entity.name ||
+      (entity.has_entity_name && deviceName ? `${deviceName} ${entity.original_name}` : entity.original_name) ||
       '?'
     );
   }
