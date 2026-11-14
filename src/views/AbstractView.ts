@@ -145,10 +145,19 @@ abstract class AbstractView {
 
   /** Get the entities represented by this view. */
   protected getEntities(): EntityRegistryEntry[] {
-    return new RegistryFilter(Registry.entities)
+    return new RegistryFilter(this.getRegistryEntities())
       .whereDomain(this.domain)
       .where((entity) => !entity.entity_id.endsWith('_stateful_scene'))
       .toList();
+  }
+
+  /**
+   * Get the registry entries the view selects its entities from.
+   *
+   * Views that should also show entities excluded by the config and diagnostic filters should override this method.
+   */
+  protected getRegistryEntities(): EntityRegistryEntry[] {
+    return Registry.entities;
   }
 
   /** Get custom options for an entity's card. */
