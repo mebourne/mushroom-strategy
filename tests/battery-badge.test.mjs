@@ -44,14 +44,14 @@ test('the battery badge counts low batteries and navigates to the battery view',
 
   assert.ok(badge);
   assert.match(badge.content, /\| list \| count/);
-  assert.match(badge.content, /select\('lt', 20\)/);
+  assert.match(badge.content, /select\('le', 20\)/);
   assert.match(badge.icon, /mdi:battery-alert.*mdi:battery-80/s);
   assert.match(badge.color, /'red' if .* else 'green'/);
   assert.equal(badge.tap_action.action, 'navigate');
   assert.equal(badge.tap_action.navigation_path, 'batteries');
 });
 
-test('the battery badge counts exactly the battery view sensors below the level', async () => {
+test('the battery badge counts exactly the battery view sensors at or below the level', async () => {
   const { dashboard } = await generate({ entities, states, options });
   const badge = batteryBadge(dashboard);
 
@@ -72,7 +72,7 @@ test('the low level follows the battery_low_level option', async () => {
   });
   const badge = batteryBadge(dashboard);
 
-  assert.ok(badge.content.includes("select('lt', 30)"));
+  assert.ok(badge.content.includes("select('le', 30)"));
 });
 
 test('the battery badge is absent when disabled, the battery view is hidden or no battery sensors exist', async () => {

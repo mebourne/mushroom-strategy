@@ -77,7 +77,7 @@ The `badges` group enables you to specify its configuration of badges.
 | Name                | type    | default | Description                                                  |
 |:--------------------|:--------|:--------|:-------------------------------------------------------------|
 | `battery_count`     | boolean | `true`  | Number of low batteries. Tap navigates to the battery view.  |
-| `battery_low_level` | number  | `20`    | Battery level below which a battery counts as low.           |
+| `battery_low_level` | number  | `20`    | Battery level at or below which a battery counts as low.     |
 | `light_count`       | boolean | `false` | Number of lights on.                                         |
 | `fan_count`         | boolean | `false` | Number of fans on.                                           |
 | `cover_count`       | boolean | `false` | Number of covers not closed. No tap action.                  |
