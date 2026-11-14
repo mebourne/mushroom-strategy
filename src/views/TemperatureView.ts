@@ -39,6 +39,11 @@ class TemperatureView extends AbstractView {
     return Registry.allAreas;
   }
 
+  /** The view also shows entities the config and diagnostic filters exclude, since its cards are read-only. */
+  protected override getRegistryEntities(): EntityRegistryEntry[] {
+    return Registry.allEntities;
+  }
+
   /** The view only groups its cards per area, so it has no Header card for all its entities. */
   protected override hasViewHeaderCard(): boolean {
     return false;

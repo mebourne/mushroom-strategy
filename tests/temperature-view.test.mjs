@@ -17,7 +17,7 @@ const entities = [
   entity('sensor.no_state', 'kitchen'),
   entity('sensor.hidden', 'kitchen', { hidden_by: 'user' }),
   entity('sensor.disabled', 'kitchen', { disabled_by: 'user' }),
-  entity('sensor.diagnostic', 'kitchen', { entity_category: 'diagnostic' }),
+  entity('sensor.diagnostic', 'kitchen', { entity_category: 'diagnostic', name: 'Diagnostic temperature' }),
   entity('sensor.custom_hidden', 'kitchen'),
   entity('switch.heater', 'kitchen'),
   entity('switch.bedroom_heater', 'bedroom'),
@@ -62,12 +62,12 @@ test('temperature cards select exact sensor units and group by entity area, devi
   );
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.fahrenheit', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
+    ['sensor.fahrenheit', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
   );
   // Names are composed from the registry (device name plus entity name) and "temperature" is removed.
   assert.deepEqual(
     cards(view).map((card) => card.primary),
-    ['Bedroom', 'Kitchen', 'Second', 'Kelvin']
+    ['Bedroom', 'Diagnostic', 'Kitchen', 'Second', 'Kelvin']
   );
   for (const card of cards(view)) {
     assert.equal(card.icon, 'mdi:thermometer');
@@ -86,7 +86,7 @@ test('temperature cards select exact sensor units and group by entity area, devi
   );
   for (const [area, ids] of [
     ['bedroom', ['sensor.fahrenheit']],
-    ['kitchen', ['sensor.celsius', 'sensor.second']],
+    ['kitchen', ['sensor.diagnostic', 'sensor.celsius', 'sensor.second']],
     ['Other', ['sensor.kelvin']],
   ]) {
     const section = view.cards.find((card) => titles(card)[0]?.title === area);
@@ -98,7 +98,7 @@ test('temperature cards select exact sensor units and group by entity area, devi
   const kitchen = view.cards.find((card) => titles(card)[0]?.title === 'kitchen');
   assert.deepEqual(
     kitchen.cards.filter((card) => cards(card).length).map((row) => cards(row).length),
-    [1, 1]
+    [1, 1, 1]
   );
 });
 
@@ -112,7 +112,7 @@ test('temperature cards include areas hidden by the strategy options, which othe
   const view = dashboard.views.find((view) => view.path === 'temperatures');
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.fahrenheit', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
+    ['sensor.fahrenheit', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
   );
   assert.deepEqual(
     titles(view).map((card) => card.title),
@@ -132,7 +132,34 @@ test('temperature cards include areas hidden by the strategy options, which othe
     options: { ...options, areas: { _: { hidden: true }, undisclosed: { hidden: true } } },
   });
   const allHiddenView = allHidden.dashboard.views.find((view) => view.path === 'temperatures');
-  assert.equal(cards(allHiddenView).length, 4);
+  assert.equal(cards(allHiddenView).length, 5);
+});
+
+test('temperature cards include diagnostic temperature sensors, which the registry filters exclude elsewhere', async () => {
+  const { dashboard } = await generate({ entities, devices, states, options });
+  const view = dashboard.views.find((view) => view.path === 'temperatures');
+  // Diagnostic temperature sensors are read-only measurements, so the temperature view shows them
+  // even though the domain's hide_diagnostic_entities default excludes them from the registry.
+  assert.ok(cards(view).some((card) => card.entity === 'sensor.diagnostic'));
+  // Diagnostic sensors without a temperature unit still stay out.
+  const withHumidity = await generate({
+    entities: [
+      ...entities,
+      entity('sensor.diagnostic_humidity', 'kitchen', { entity_category: 'diagnostic', name: 'Diagnostic humidity' }),
+    ],
+    devices,
+    states: {
+      ...states,
+      'sensor.diagnostic_humidity': {
+        entity_id: 'sensor.diagnostic_humidity',
+        state: '40',
+        attributes: { unit_of_measurement: '%' },
+      },
+    },
+    options,
+  });
+  const humidityView = withHumidity.dashboard.views.find((view) => view.path === 'temperatures');
+  assert.ok(!cards(humidityView).some((card) => card.entity === 'sensor.diagnostic_humidity'));
 });
 
 test('temperature views respect custom headers, positions and device then entity card options', async () => {

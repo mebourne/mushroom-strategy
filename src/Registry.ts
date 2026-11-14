@@ -77,6 +77,14 @@ class Registry {
     return Registry._entities;
   }
 
+  /** All processed entries of Home Assistant's entity registry, including entities excluded by the config and diagnostic filters. */
+  private static _allEntities: EntityRegistryEntry[];
+
+  /** Get the processed entries of the HASS entity registry, including entities excluded by the config and diagnostic filters. */
+  static get allEntities(): EntityRegistryEntry[] {
+    return Registry._allEntities;
+  }
+
   /** Entries of Home Assistant's area registry. */
   private static _areas: StrategyArea[] = [];
 
@@ -149,13 +157,37 @@ class Registry {
     }));
 
     // Process entries of the HASS entity registry.
+    const processEntity = (entity: EntityRegistryEntry) => ({
+      ...entity,
+      area_id: entity.area_id ?? 'undisclosed',
+    });
+
     const filterLabel = Registry.strategyOptions.filter_label;
-    Registry._entities = new RegistryFilter(Registry.entities)
+
+    // Keep every entity that isn't hidden, disabled or label-filtered, including entities the config
+    // and diagnostic filters exclude, for views that show all of them.
+    Registry._allEntities = new RegistryFilter(Registry.entities)
       .isNotHidden()
       .whereDisabledBy(null)
       .where((entity) => !filterLabel || entity.labels.includes(filterLabel))
+      .toList()
+      .map(processEntity);
+
+    // Sort entities by display name.
+    const sortEntities = (entities: EntityRegistryEntry[]): EntityRegistryEntry[] =>
+      entities.sort((a, b) => {
+        const displayNameA = Registry.getDisplayName(a);
+        const displayNameB = Registry.getDisplayName(b);
+
+        return displayNameA.localeCompare(displayNameB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+    Registry._allEntities = sortEntities(Registry._allEntities);
+
+    // The standard views also exclude config and diagnostic entities if the domain has
+    // hide_config_entities or hide_diagnostic_entities enabled.
+    Registry._entities = new RegistryFilter(Registry._allEntities)
       .where((entity) => {
-        // Filter out config and diagnostic entities if the domain has hide_config_entities or hide_diagnostic_entities enabled.
         const entityDomain = entity.entity_id.split('.', 1)[0];
         const domain = isSupportedDomain(entityDomain) ? entityDomain : 'default';
 
@@ -174,16 +206,7 @@ class Registry {
 
         return !(domainOptions.hide_diagnostic_entities && entity.entity_category === 'diagnostic');
       })
-      .toList()
-      .map((entity) => ({ ...entity, area_id: entity.area_id ?? 'undisclosed' }));
-
-    // Sort entities by display name.
-    Registry._entities = Registry._entities.sort((a, b) => {
-      const displayNameA = Registry.getDisplayName(a);
-      const displayNameB = Registry.getDisplayName(b);
-
-      return displayNameA.localeCompare(displayNameB, undefined, { numeric: true, sensitivity: 'base' });
-    });
+      .toList();
 
     // Process entries of the HASS device registry.
     Registry._devices = new RegistryFilter(Registry.devices)
