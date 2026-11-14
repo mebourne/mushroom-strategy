@@ -48,6 +48,7 @@ gradient.
 Card options come from `card_options`: device options apply first, then entity options override them.
 Each card is always bound to its selected sensor; it cannot be pointed at another entity through these options.
 Row layout uses `domains.sensor.stack_count`, falling back to `domains._.stack_count`.
+The view has no all-entities Header card; only each area gets a header.
 Temperature headers are read-only and do not offer sensor service controls.
 
 ## Sorting Views
