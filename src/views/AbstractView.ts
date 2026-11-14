@@ -12,7 +12,7 @@ import {
   CustomHeaderCardConfig,
   StrategyHeaderCardConfig,
 } from '../types/strategy/strategy-cards';
-import { CustomCardConfig, SupportedDomains } from '../types/strategy/strategy-generics';
+import { CustomCardConfig, StrategyArea, SupportedDomains } from '../types/strategy/strategy-generics';
 import { ViewConfig, ViewConstructor } from '../types/strategy/strategy-views';
 import { sanitizeClassName } from '../utilities/auxiliaries';
 import { logMessage, lvlFatal } from '../utilities/debug';
@@ -95,7 +95,7 @@ abstract class AbstractView {
     const domainEntities = this.getEntities();
 
     // Create card configurations for each area.
-    for (const area of Registry.areas) {
+    for (const area of this.getAreas()) {
       const areaEntities = new RegistryFilter(domainEntities).whereAreaId(area.area_id).toList();
 
       let areaCards: AbstractCardConfig[] = [];
@@ -154,6 +154,15 @@ abstract class AbstractView {
   /** Get custom options for an entity's card. */
   protected getCardOptions(entity: EntityRegistryEntry): CustomCardConfig | undefined {
     return Registry.strategyOptions.card_options?.[entity.entity_id];
+  }
+
+  /**
+   * Get the areas the view renders its entities for.
+   *
+   * Views that should also show areas hidden by the strategy options should override this method.
+   */
+  protected getAreas(): StrategyArea[] {
+    return Registry.areas;
   }
 
   /**

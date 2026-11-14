@@ -80,6 +80,14 @@ class Registry {
   /** Entries of Home Assistant's area registry. */
   private static _areas: StrategyArea[] = [];
 
+  /** All entries of Home Assistant's area registry, including areas hidden by the strategy options. */
+  private static _allAreas: StrategyArea[] = [];
+
+  /** Get the processed areas of the HASS area registry, including areas hidden by the strategy options. */
+  static get allAreas(): StrategyArea[] {
+    return Registry._allAreas;
+  }
+
   /**
    * Home Assistant's Area registry.
    *
@@ -200,9 +208,9 @@ class Registry {
       temperature_entity_id: null,
     });
 
-    const areaList = new RegistryFilter(Registry._areas).isNotHidden().orderBy(['name'], 'asc').toList();
+    const areaList = new RegistryFilter(Registry._areas).orderBy(['name'], 'asc').toList();
 
-    Registry._areas = areaList.map((area, index) => {
+    const processArea = (area: (typeof areaList)[number], index: number) => {
       const isUndisclosed = area.area_id === 'undisclosed';
 
       return {
@@ -212,7 +220,16 @@ class Registry {
         ...Registry.strategyOptions.areas[area.area_id], // Specific overrides
         ...(isUndisclosed ? { area_id: 'undisclosed', type: 'default' } : {}), // Force constraints for undisclosed
       };
-    });
+    };
+
+    // Keep every area, including areas hidden by the strategy options, for views that show all of them.
+    Registry._allAreas = areaList.map(processArea);
+
+    // Sort the areas by order first, then by name.
+    Registry._allAreas = new RegistryFilter(Registry._allAreas).orderBy(['order', 'name'], 'asc').toList();
+
+    // The standard views only show areas that aren't hidden.
+    Registry._areas = new RegistryFilter(Registry._allAreas).isNotHidden().toList();
 
     // Sort the areas by order first, then by name.
     Registry._areas = new RegistryFilter(Registry._areas).orderBy(['order', 'name'], 'asc').toList();

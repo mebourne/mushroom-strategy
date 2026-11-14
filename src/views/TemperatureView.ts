@@ -4,7 +4,7 @@ import { Registry } from '../Registry';
 import AbstractCard from '../cards/AbstractCard';
 import TemperatureCard from '../cards/TemperatureCard';
 import { EntityRegistryEntry } from '../types/homeassistant/data/entity_registry';
-import { CustomCardConfig } from '../types/strategy/strategy-generics';
+import { CustomCardConfig, StrategyArea } from '../types/strategy/strategy-generics';
 import { ViewConfig } from '../types/strategy/strategy-views';
 import { localize } from '../utilities/localize';
 import AbstractView from './AbstractView';
@@ -32,6 +32,11 @@ class TemperatureView extends AbstractView {
         show_controls: false,
       },
     };
+  }
+
+  /** The view also shows areas hidden by the strategy options, since its cards are read-only. */
+  protected override getAreas(): StrategyArea[] {
+    return Registry.allAreas;
   }
 
   /** The view only groups its cards per area, so it has no Header card for all its entities. */

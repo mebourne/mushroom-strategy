@@ -20,6 +20,7 @@ const entities = [
   entity('sensor.diagnostic', 'kitchen', { entity_category: 'diagnostic' }),
   entity('sensor.custom_hidden', 'kitchen'),
   entity('switch.heater', 'kitchen'),
+  entity('switch.bedroom_heater', 'bedroom'),
   entity('fan.extractor', 'kitchen'),
   entity('climate.thermostat', 'kitchen'),
 ];
@@ -101,7 +102,7 @@ test('temperature cards select exact sensor units and group by entity area, devi
   );
 });
 
-test('temperature cards omit hidden entity areas, device areas and the undisclosed area', async () => {
+test('temperature cards include areas hidden by the strategy options, which other views still omit', async () => {
   const { dashboard } = await generate({
     entities,
     devices,
@@ -111,19 +112,27 @@ test('temperature cards omit hidden entity areas, device areas and the undisclos
   const view = dashboard.views.find((view) => view.path === 'temperatures');
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.celsius', 'sensor.second']
+    ['sensor.fahrenheit', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
   );
   assert.deepEqual(
     titles(view).map((card) => card.title),
-    ['kitchen']
+    ['bedroom', 'kitchen', 'Other']
   );
-  const hidden = await generate({
+  // The control views keep omitting the hidden areas.
+  const switches = dashboard.views.find((view) => view.path === 'switches');
+  assert.deepEqual(
+    titles(switches).map((card) => card.title),
+    ['All Switches', 'kitchen']
+  );
+  // Even a dashboard-wide hidden areas option does not suppress the temperature view.
+  const allHidden = await generate({
     entities,
     devices,
     states,
     options: { ...options, areas: { _: { hidden: true }, undisclosed: { hidden: true } } },
   });
-  assert.ok(!hidden.dashboard.views.some((view) => view.path === 'temperatures'));
+  const allHiddenView = allHidden.dashboard.views.find((view) => view.path === 'temperatures');
+  assert.equal(cards(allHiddenView).length, 4);
 });
 
 test('temperature views respect custom headers, positions and device then entity card options', async () => {
