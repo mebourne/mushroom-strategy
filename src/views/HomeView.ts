@@ -190,6 +190,24 @@ class HomeView extends AbstractView {
       logMessage(lvlInfo, 'Weather badge has no entities available.');
     }
 
+    // Battery badge.
+    // Batteries have no domain of their own, so this badge is created here instead of in the numeric badges loop
+    // below, like the weather badge.
+    if (Registry.strategyOptions.badges.battery_count && !Registry.strategyOptions.views.battery.hidden) {
+      if (Registry.getBatteryEntities().length) {
+        try {
+          Badge = (await import('../badges/BatteryBadge')).default;
+          const batteryBadge = new Badge();
+
+          configurations.push(batteryBadge.getConfiguration());
+        } catch (e) {
+          logMessage(lvlError, 'Error importing badge battery!', e);
+        }
+      } else {
+        logMessage(lvlInfo, 'Battery badge has no entities available.');
+      }
+    }
+
     // Numeric badges.
     for (const badgeName of exposedBadges) {
       if (!isSupportedBadge(badgeName) || !new registryFilter(Registry.entities).whereDomain(badgeName).count()) {

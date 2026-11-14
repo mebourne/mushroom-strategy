@@ -269,6 +269,21 @@ class Registry {
   }
 
   /**
+   * Get the battery sensors of the registry.
+   *
+   * These are the entities the battery view shows: sensor entities with a battery device class, taken from all
+   * entities, so diagnostic and config entities are included while hidden and disabled ones are not.
+   *
+   * @returns {EntityRegistryEntry[]} The battery sensor entities.
+   */
+  static getBatteryEntities(): EntityRegistryEntry[] {
+    return new RegistryFilter(Registry.allEntities)
+      .whereDomain('sensor')
+      .where((entity) => Registry.hassStates[entity.entity_id]?.attributes.device_class === 'battery')
+      .toList();
+  }
+
+  /**
    * Get a template string to define the number of a given domain's entities with a certain state.
    *
    * States are compared against a given value by a given operator.
