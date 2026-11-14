@@ -67,8 +67,8 @@ class TemperatureCard extends AbstractCard {
    * The name is composed the way Home Assistant composes entity names: the entity's own name, or for entities named
    * after their device, the device's name followed by the entity's original name. An empty name falls back to the
    * device's name the same way, since Home Assistant treats an empty registry name as unset.
-   * Removing "temperature" shortens names like "Office temperature" to "Office", but a name consisting of only that
-   * word is kept intact.
+   * Removing "temperature" shortens names like "Office temperature" to "Office". A name consisting of only that word
+   * carries no information, so such a card shows the device's name instead.
    *
    * @param {EntityRegistryEntry} entity The HASS entity to name.
    */
@@ -79,8 +79,9 @@ class TemperatureCard extends AbstractCard {
       entity.name ||
       (entity.has_entity_name && deviceName ? `${deviceName} ${entity.original_name}` : entity.original_name) ||
       '?';
+    const shortName = name.replace(/temperature/gi, '').trim();
 
-    return name.replace(/temperature/gi, '').trim() || name;
+    return shortName || deviceName || name;
   }
 
   /** Returns the default configuration object for the card. */

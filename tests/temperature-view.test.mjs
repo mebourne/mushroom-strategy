@@ -16,6 +16,7 @@ const entities = [
     original_name: 'Temperature',
     device_id: 'bedroom-device',
   }),
+  entity('sensor.bare_temperature', 'kitchen', { original_name: 'Temperature', device_id: 'bedroom-device' }),
   entity('sensor.kelvin', null, { name: 'Kelvin temperature' }),
   entity('sensor.humidity', 'kitchen', { name: 'Humidity' }),
   entity('sensor.near_unit', 'kitchen'),
@@ -68,12 +69,20 @@ test('temperature cards select exact sensor units and group by entity area, devi
   );
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.fahrenheit', 'sensor.empty_named', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
+    [
+      'sensor.fahrenheit',
+      'sensor.empty_named',
+      'sensor.diagnostic',
+      'sensor.celsius',
+      'sensor.second',
+      'sensor.bare_temperature',
+      'sensor.kelvin',
+    ]
   );
   // Names are composed from the registry (device name plus entity name) and "temperature" is removed.
   assert.deepEqual(
     cards(view).map((card) => card.primary),
-    ['Bedroom', 'Bedroom', 'Diagnostic', 'Kitchen', 'Second', 'Kelvin']
+    ['Bedroom', 'Bedroom', 'Diagnostic', 'Kitchen', 'Second', 'Bedroom', 'Kelvin']
   );
   for (const card of cards(view)) {
     assert.equal(card.icon, 'mdi:thermometer');
@@ -92,7 +101,10 @@ test('temperature cards select exact sensor units and group by entity area, devi
   );
   for (const [area, ids] of [
     ['bedroom', ['sensor.fahrenheit']],
-    ['kitchen', ['sensor.empty_named', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second']],
+    [
+      'kitchen',
+      ['sensor.empty_named', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second', 'sensor.bare_temperature'],
+    ],
     ['Other', ['sensor.kelvin']],
   ]) {
     const section = view.cards.find((card) => titles(card)[0]?.title === area);
@@ -104,7 +116,7 @@ test('temperature cards select exact sensor units and group by entity area, devi
   const kitchen = view.cards.find((card) => titles(card)[0]?.title === 'kitchen');
   assert.deepEqual(
     kitchen.cards.filter((card) => cards(card).length).map((row) => cards(row).length),
-    [1, 1, 1, 1]
+    [1, 1, 1, 1, 1]
   );
 });
 
@@ -118,7 +130,15 @@ test('temperature cards include areas hidden by the strategy options, which othe
   const view = dashboard.views.find((view) => view.path === 'temperatures');
   assert.deepEqual(
     cards(view).map((card) => card.entity),
-    ['sensor.fahrenheit', 'sensor.empty_named', 'sensor.diagnostic', 'sensor.celsius', 'sensor.second', 'sensor.kelvin']
+    [
+      'sensor.fahrenheit',
+      'sensor.empty_named',
+      'sensor.diagnostic',
+      'sensor.celsius',
+      'sensor.second',
+      'sensor.bare_temperature',
+      'sensor.kelvin',
+    ]
   );
   assert.deepEqual(
     titles(view).map((card) => card.title),
@@ -138,7 +158,7 @@ test('temperature cards include areas hidden by the strategy options, which othe
     options: { ...options, areas: { _: { hidden: true }, undisclosed: { hidden: true } } },
   });
   const allHiddenView = allHidden.dashboard.views.find((view) => view.path === 'temperatures');
-  assert.equal(cards(allHiddenView).length, 6);
+  assert.equal(cards(allHiddenView).length, 7);
 });
 
 test('temperature cards include diagnostic temperature sensors, which the registry filters exclude elsewhere', async () => {
