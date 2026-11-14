@@ -74,15 +74,21 @@ Hidden/Disabled entities are excluded from this count.
 
 The `badges` group enables you to specify its configuration of badges.
 
-| Name             | type    | default | Description                                 |
-|:-----------------|:--------|:--------|:--------------------------------------------|
-| `light_count`    | boolean | `false` | Number of lights on.                        |
-| `fan_count`      | boolean | `false` | Number of fans on.                          |
-| `cover_count`    | boolean | `false` | Number of covers not closed. No tap action. |
-| `switch_count`   | boolean | `false` | Number of switches on.                      |
-| `climate_count`  | boolean | `false` | Number of climate not off. No tap action.   |
-| `weather_entity` | string  | `auto`  | Entity id for the weather badge to use.     |
-| `extra_badges`   | array   | `[]`    | List of extra badges to show.               |
+| Name                | type    | default | Description                                                  |
+|:--------------------|:--------|:--------|:-------------------------------------------------------------|
+| `battery_count`     | boolean | `true`  | Number of low batteries. Tap navigates to the battery view.  |
+| `battery_low_level` | number  | `20`    | Battery level below which a battery counts as low.           |
+| `light_count`       | boolean | `false` | Number of lights on.                                         |
+| `fan_count`         | boolean | `false` | Number of fans on.                                           |
+| `cover_count`       | boolean | `false` | Number of covers not closed. No tap action.                  |
+| `switch_count`      | boolean | `false` | Number of switches on.                                       |
+| `climate_count`     | boolean | `false` | Number of climate not off. No tap action.                    |
+| `weather_entity`    | string  | `auto`  | Entity id for the weather badge to use.                      |
+| `extra_badges`      | array   | `[]`    | List of extra badges to show.                                |
+
+The battery badge counts the same sensors the battery view shows, so it also includes sensors from hidden areas and
+diagnostic and config entities.<br>
+A sensor whose state isn't a number, like `unavailable`, is never counted as low.
 
 If `weather_entity` is set to `auto`, the weather badge uses the first entity of the weather domain it finds.<br>
 You can define a custom entity to use by setting an entity id.

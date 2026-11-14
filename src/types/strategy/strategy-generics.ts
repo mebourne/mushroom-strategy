@@ -304,6 +304,9 @@ export interface AllAreasConfig {
 /**
  * A list of badges to show in the Home view.
  *
+ * @property {boolean} battery_count - Badge to display the number of low batteries. Tapping navigates to the
+ *                                     battery view.
+ * @property {number} battery_low_level - Battery level below which a battery counts as low.
  * @property {boolean} climate_count - Badge to display the number of climates which are not off.
  * @property {boolean} cover_count - Badge to display the number of unclosed covers.
  * @property {LovelaceBadgeConfig[]} extra_badges - List of extra badges.
@@ -314,6 +317,8 @@ export interface AllAreasConfig {
  *                                                           Accepts `weather.` ids or `auto` only.
  */
 export interface BadgeConfig {
+  battery_count: boolean;
+  battery_low_level: number;
   climate_count: boolean;
   cover_count: boolean;
   extra_badges: LovelaceBadgeConfig[];

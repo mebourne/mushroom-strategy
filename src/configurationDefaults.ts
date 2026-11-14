@@ -24,6 +24,8 @@ export const ConfigurationDefaults: StrategyConfig = {
   badges: {
     // TODO: Make badges sortable.
     weather_entity: 'auto',
+    battery_count: true,
+    battery_low_level: 20,
     light_count: true,
     fan_count: true,
     cover_count: true,
